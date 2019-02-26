@@ -6,8 +6,10 @@ const app = express();
 
 const port = 8000;
 
-routes(app, {});
+// use package to parse URL encoded form request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
+routes(app, {});
 app.listen(port, () => {
     console.log('We are live on', port)
 })
