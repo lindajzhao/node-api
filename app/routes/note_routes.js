@@ -54,4 +54,28 @@ module.exports = function(app, db) {
           } 
         });
       });
+
+      // PUT (Find and update a note)
+      app.put('/notes/:id', (req, res) => {
+          const id = req.params.id;
+          const details = { '_id': new ObjectID(id) };
+
+          const { body = {} } = req;
+          const { title, contents } = body;
+          
+          if (title) {
+              const note = { title, contents };
+            
+              // .update take 3 arguments
+              collection.update(details, note, (err, result) => {
+                  if (err) { 
+                    res.send({ 'error': `An error has occurred while POSTing: ${err}` }); 
+                  } else {
+                    res.send(result);
+                  }
+              });
+          } else {
+              res.send('Failed to PUT. Needs a title'); 
+          }
+      })
 }
