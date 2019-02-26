@@ -1,4 +1,5 @@
-//  In Express, routes are wrapped in a function, which takes 
+const config = require('../../config/db')
+// In Express, routes are wrapped in a function, which takes 
 // the Express instance and a database as arguments.
 
 module.exports = function(app, db) {
@@ -6,7 +7,17 @@ module.exports = function(app, db) {
     // it will execute the code inside and send the request and 
     // return a response
     app.post('/notes', (request, response) => {
-        console.log(request.body)
-        response.send('Hello')
+        const { body = {} } = request;
+        const { title, contents } = body;
+        const note = { title, contents };
+
+        db.collection(config.defaultCollection).insert(note, (err, result) => {
+            if (err) { 
+              response.send({ 'error': `An error has occurred: ${err}` }); 
+            } else {
+              response.send(result.ops[0]);
+            }
+        });
+
     })
 }
