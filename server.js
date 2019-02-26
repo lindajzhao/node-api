@@ -1,15 +1,30 @@
+// Dependencies
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
-const routes = require('./app/routes');
+
+// Instantiate Express
 const app = express();
 
+// Config
+const routes = require('./app/routes');
+const db = require('./config/db');
 const port = 8000;
 
-// use package to parse URL encoded form request bodies
+// Add middleware to parse URL encoded form request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
-routes(app, {});
-app.listen(port, () => {
-    console.log('We are live on', port)
+MongoClient.connect(db.url, (err, database) => {
+    if (err) {
+        return console.log(err)
+    }
+
+    // Specify database name
+    const mLabDB = database.db("Cluster0")
+
+    routes(app, mLabDB);
+    
+    app.listen(port, () => {
+        console.log('Listening on port', port)
+    })
 })
